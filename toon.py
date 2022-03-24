@@ -2,13 +2,15 @@ import cv2
 import numpy as np
 from pyparsing import col
 
-def color_subtraction(img, div=4):
+def color_subtraction(image, div=4):
     # 画像処理100本ノック
     # https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/questions/question_01_10#q6-%E6%B8%9B%E8%89%B2-color-subtraction
-    th = 256 // div
+    th1 = 256/div
+    th2 = 256/(div-1)
+    result = np.clip(image // th1 * th2 , 0, 255).astype(np.uint8)
+    cv2.imwrite("gensyoku.png", result)
 #    return img // th * th
-    result = np.clip(img // th * th + th // 2, 0, 255)
-    cv2.imwrite("ubtraction.png", result)
+#    result = img // th * th + th // 2
     return result
 
 def blur(image, k=5):
@@ -24,8 +26,7 @@ def canny(image):
     th1 = int(max(0, (1-sigma)*med))
     th2 = int(max(255, (1+sigma)*med))
     result = cv2.Canny(image, th1, th2)
-    cv2.imwrite("canny.png", result)
-    return cv2.Canny(image, th1, th2)
+    return result
 
 def bold(image, k=3):
     kernel = np.ones((k,k),np.uint8)
@@ -36,10 +37,10 @@ def otsu(image):
 
 
 def main():
-    filename = "macho2.jpg"
+    filename = "macho.jpg"
     image = cv2.imread(filename)
 
-    gensyoku = color_subtraction(image.copy())
+    gensyoku = color_subtraction(image)
 
     gray = cv2.cvtColor(gensyoku, cv2.COLOR_BGR2GRAY)
     img_blur = blur(image)
@@ -47,6 +48,7 @@ def main():
 
 
     edge = canny(gray_blur)
+
 #    dil = dilation(edge)
 #    edge2 = canny(edge)
 
