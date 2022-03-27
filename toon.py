@@ -1,7 +1,5 @@
-from enum import auto
 import cv2
 import numpy as np
-from pyparsing import col
 
 def color_subtraction(image, div=4):
     th1 = 256 / div
@@ -37,23 +35,19 @@ def darken(image, edge):
     return result.astype(np.uint8)      # uint8にして返す
 
 
-def main():
-    filename = "macho_origin.jpg"
-    img = cv2.imread(filename)
+filename = "macho.jpg"
+img = cv2.imread(filename)
 
-    # ベース画像　平滑化して減色する
-    img_blur = blur(img)
-    img_blur_subtract = color_subtraction(img_blur)
+# ベース画像　平滑化して減色する
+img_blur = blur(img)
+img_blur_subtract = color_subtraction(img_blur)
 
-    # エッジ画像　平滑化してエッジ検出し膨張させさらに平滑化する
-    img_blur_canny = auto_canny(img_blur)
-    img_blur_canny_dilate = dilate(img_blur_canny)
-    img_blur_canny_dilate_blur = blur(img_blur_canny_dilate)
+# エッジ画像　平滑化してエッジ検出し膨張させさらに平滑化する
+img_blur_canny = auto_canny(img_blur)
+img_blur_canny_dilate = dilate(img_blur_canny)
+img_blur_canny_dilate_blur = blur(img_blur_canny_dilate)
 
-    result = darken(img_blur_subtract, 255-img_blur_canny_dilate_blur)
-    cv2.imshow("result", result)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
-if __name__=="__main__":
-    main()
+result = darken(img_blur_subtract, 255-img_blur_canny_dilate_blur)
+cv2.imshow("result", result)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
