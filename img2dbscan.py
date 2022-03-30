@@ -29,9 +29,8 @@ def find_edge(image):
     return img_blur_canny
 
 def count_edge(image):
-    h, w = image.shape[:2]
-    Y, X = np.where(image==255)   # 白のインデックスのリスト[[y1, y2, ...], [x1, x2, ...]]
-    return np.array([X, Y]).T     # 転置して[[x1,y1], [x2,y2], ...]にする
+    Y, X = np.where(image==255)     # 白のインデックスのリスト[[y1, y2, ...], [x1, x2, ...]]
+    return np.array([X, Y]).T       # 転置して[[x1,y1], [x2,y2], ...]にする
 
 
 
@@ -39,18 +38,18 @@ filename = "macho.jpg"
 img = cv2.imread(filename)
 h, w = img.shape[:2]
 
-edge = find_edge(img)
-pos = count_edge(edge)
-print (f"画素数={h*w} -> エッジ数={len(pos)}")
+edge_img = find_edge(img)           # 画像のエッジ取得
+edge_pos = count_edge(edge_img)     # エッジ座標のリストを取得
+print (f"画素数={h*w} -> エッジ数={len(edge_pos)}")
 
-clustering = DBSCAN(eps=5, min_samples=5).fit(pos)
+clustering = DBSCAN(eps=5, min_samples=5).fit(edge_pos)
 unique_labels = np.unique(clustering.labels_)
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
 ax.set_aspect('equal', adjustable='box')
 for label in unique_labels:
-    p = pos[np.where(clustering.labels_==label)]
-    plt.scatter(p[:,0], h-p[:,1], label=label)
+    pos = edge_pos[np.where(clustering.labels_==label)]
+    plt.scatter(pos[:,0], h-pos[:,1], label=label)
 ax.legend()
 plt.show()
